@@ -1,0 +1,382 @@
+#%RAML 1.0
+title: New API
+version: v1
+baseUri: http://{environment}.api.domain.com/{version}/
+baseUriParameters:
+  environment:
+    type: string
+    description: |
+      API environment. The value can be one of "development", "stage" or "production"
+      Development environment is avaibale for dev keys (client id).
+      Stage is available internally only and keys are whitelisted for this environment. Keys that are not whitelisted will always return 404 for any call.
+      Production is available for redular keys (klient ids).
+    pattern: (development|stage|production)
+    example: production
+types:
+  Image:
+    description: An image object used as a part of different resources
+    type: object
+    properties:
+      url:
+        type: string
+        description: The URL of the person's profile photo. To resize the image and crop it to a square, append the query string **?sz=x**, where x is the dimension in pixels of each side.
+  Resource:
+    description: Common properties for all resources returned by the API.
+    type: object
+    properties:
+      etag:
+        type: string
+        description: ETag of this response for caching purposes. __This property will be ignored when creating an object.__
+  Person:
+    displayName: A person resource
+    description: |
+      An object representing a person in the API. This object will be used in all methods returning a Person or list of persons.
+    type: Resource
+    properties:
+      id:
+        description: A unique identifier for a person. It is a 32 signs string containing alphanumeric characters.
+        pattern: [A-Za-Z0-9]
+      name:
+        required: true
+        example: John Smith
+        description: Person full name. The input will be rejected if this property is not set while creating new object.
+        type: string
+      birthday:
+        type: string
+        description: The person's date of birth, represented as YYYY-MM-DD.
+      gender:
+        type: string
+        description: |
+          The person's gender. Possible values include, but are not limited to, the following values:
+          * "male" - Male gender.
+          * "female" - Female gender.
+          * "other" - Other.
+      url:
+        type: string
+        description: The URL of this person's profile.
+      image: Image
+      tagline:
+        type: string
+        description: The brief description (tagline) of this person.
+      language:
+        type: string
+        description: The user's preferred language for rendering.
+  Product:
+    displayName: A product resource
+    description: A single product representing an item in the store.
+    type: Resource
+    properties:
+      id:
+        description: Product id. It is a UUID of the database record. __This property will be ignored when creating an object.__
+        pattern: [A-Za-Z0-9]
+      name:
+        type: string
+        description: Product name
+        example: Acme product - mentol flavor, 500 ml.
+        required: true
+      quantity:
+        type: number
+        description: The quantity of the product in the one unit of measurement. See `unit` property for unit information.
+        example: 500
+        required: true
+      unit:
+        type: string
+        description: The unit of measuremet for the quantity property.
+        example: ml
+        required: true
+      upc:
+        type: string
+        pattern: "[0-9]{12,12}"
+        description: The Universal Produc Code. It consists of 12 numerical digits. However, because of the integer precision limitation in JavaScript it is transfered as a string.
+        example: "042100005264"
+        required: true
+      available:
+        type: boolean
+        description: Product current availability in the store. Product may be not available but the users still can order it with later delivery date.
+        required: true
+        example: true
+resourceTypes:
+  ErrorResponse:
+    get:
+      responses:
+        <<statusCode>>:
+          body:
+            application/json:
+              displayName: Errored response
+              type: object
+              properties:
+                error:
+                  type: boolean
+                  required: true
+                  example: true
+                  description: Indicate that the response is errored.
+                message:
+                  type: string
+                  description: The error message associated with the error.
+                  example: <<example>>
+                  required: true
+traits:
+  Paginated:
+    displayName: Paginated
+    description: The collection of <<resourcePathName>>.
+    usage: Use it when want to paginate the result.
+    headers:
+      X-Paginated:
+        type: string
+        description: Required for paginated resources. It's value is always true.
+        example: "true"
+        required: true
+    queryParameters:
+      limit:
+        type: number
+        description: Limit in the response list
+        maximum: 300
+        minimum: 1
+        example: 100
+        default: 25
+      start:
+        type: number
+        description: The start entry of the list
+        minimum: 0
+        example: 25
+        default: 0
+      nextPageToken:
+        type: string
+        example: asdas87axJNASoHm9Hs0
+        description: The `nextPageToken` is a web safe encoded cursor to the next entry in the database. It can be obtained by requesting paginated resource and used in next request to get next results page.
+        pattern: "[a-zA-Z0-9]+"
+    responses:
+      200:
+        description: Paginated response containing a single page of the result. By default one page og the results contains 25 items. You can extend it by setting a `limit` query parameter in your request.\nWhen changing parameters while using the `nextPageToken` the `nextPageToken` will be ignored and new query will be performed. Queries with `nextPageToken` should contain the same set of parameters as the first request.
+        body:
+          application/json:
+            type: object
+            properties:
+              items:
+                type: array
+                required: true
+                description: Contains a list of objects of a type given for this method and endpoint.
+                items: [<<resourceType>>]
+              nextPageToken:
+                type: string
+                required: true
+                example: asdas87axJNASoHm9Hs
+                description: The next page token is web safe encoded cursor to the next entry in the database. Use it in the next request to obtain next page of the results.
+      400:
+        description: The error response when one of the parameters is invalid and can't be parsed. Nothing can be done at the time except correcting the request to send valid data.
+        body:
+          application/json:
+            displayName: Invalid
+            type: object
+            properties:
+              error:
+                type: boolean
+                required: true
+                example: true
+                description: Indicate that the response is errored.
+              message:
+                type: string
+                description: The error message associated with the error.
+                example: The `limit` parameter is invalid. Please, provide a number between 1 and 300.
+                required: true
+securitySchemes:
+  oauth_2_0:
+    type: OAuth 2.0
+    description: This API supports OAuth 2.0 for authenticating all API requests.
+    describedBy:
+      queryParameters:
+        access_token:
+          type: string
+          description: Used to send a valid OAuth 2 access token. Do not use with the "Authorization" header.
+          required: false
+      headers:
+        authorization:
+          type: string
+          example: ya.2453vfDb3cJHisdf.*&H
+          description: Used to send a valid OAuth 2 access token. Do not use with the "access_token" query string parameter.
+          required: false
+      responses:
+        401:
+          description: Bad or expired token. This can happen if the user or Dropbox revoked or expired an access token. To fix, re-authenticate the user.
+          body:
+            application/json:
+        403:
+          description: Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately, re-authenticating the user won't help here.
+          body:
+            application/json:
+    settings:
+      accessTokenUri: http://api.domain.com/oauth2/token
+      authorizationUri: http://api.domain.com/oauth2/auth
+      authorizationGrants: ["authorization_code"]
+      scopes: ["profile", "email"]
+  oauth_1_0:
+    type: OAuth 1.0
+    description: OAuth 1.0 continues to be supported for all API requests, but OAuth 2.0 is now preferred.
+    settings:
+      requestTokenUri: http://api.domain.com/oauth1/request_token
+      authorizationUri: http://api.domain.com/oauth1/authorize
+      tokenCredentialsUri: http://api.domain.com/oauth1/access_token
+documentation:
+  - title: About
+    content: |
+      # About the example API
+
+      The `Example API` provides all definitions of the RAML 1.0 like types, security schemes, resource types and so on.
+      Magic variables are special strings that are passed to any string property in the request and it will be replaced with other string that is defined for
+      this variable.
+
+      ## Example
+      Let's say you want to generate a random number in the request. So the property
+      value like:
+      ```
+      http://www.domain.com/?time=${now}
+      ```
+      can produce:
+      ```
+      http://www.domain.com/?time=12312312312
+      ```
+
+      ## Build-in magic variables.
+      | Variable | Description | Example |
+      | --- | --- | --- |
+      | `${random}` | Will generate random number in range from 0 to Number.MAX_SAFE_INTEGER | 9007199254740991 |
+      | `${random:NUMBER}` | A variation of `${random}` where the result will be remembered and can be used in other property. If the same `NUMBER` occurs again then previously generated value will be used. | 7199254740 |
+      | `${now}` | Inserts current epoch time | 12312312312 |
+
+      ## Magic variables scopes
+      There are two types of magic variables:
+      * **global** - Applied to every request,
+      * **scoped** - Applied to a request enclosed in a project.
+
+      ### Global variables
+      Variables of this type will be applied to every outgoing request.
+
+      ### Scoped variables.
+      Scoped variables are associated with a project and are applied to those request
+      that are added to corresponding project.
+
+      ## User magic variables
+      This element supports user defined variables. Variables defined by the user are kept
+      in IndexedDB locally and retreived
+      by the element on run time. Users can decide either the variable is global or scoped.
+
+      ## Database structure
+      | Property | Type | Is key | Description |
+      | --- | --- | --- | --- |
+      | id | Number | Yes, key path | An autoincremental key for the rule |
+      | variable | String | Yes | A variable name. It must be consisted with [0-9A-Za-z${}_-] |
+      | value | String | No | Replacement value. Replacement value may include other magic variables |
+      | type | String | Yes | Either `global` or `scoped` (for now) |
+      | project | Number | Yes | Relevant if the `type` is set to `scoped`. The rule will be applied to the requests that are associated with this project. If not set if will be omnited. |
+
+      ## Usage
+      The element's `value` property contains a value that will be parsed during the work.
+      It may be either String or Object.
+
+      While String is obvious, the Object will be treated differently. It will parse only
+      string values of each first level key.
+      This means that no deep objects will be taken into consideration.
+      Before start applying new magic variables the program should call `clear()`
+      function to clear the groups defined by previous use.
+      The element will keep groups generated data so it can be uses many times on
+      different strings resulting with the same group values.
+
+      JavaScript code:
+      ```javascript
+      ...
+      this.$.mv.clear();
+      this.set('headersList', headers);
+      this.$.mv.parse();
+      ...
+      _onParsed = (e) => {
+        var headers = e.detail.result;
+      };
+      ...
+      ```
+      The parse method returns a Promise which will be fulfilled when it finish parsing data:
+      ```javascript
+      ...
+      this.set('headersList', headers);
+      this.$.mv.parse()
+      .then((result) => {
+        // parsed data
+      });
+      ...
+      ```
+  - title: Test docs
+    content: |
+      # A test documentation.
+
+      This text was created by ARC's RAML editor.
+securedBy: [oauth_2_0, oauth_1_0]
+/people:
+  displayName: People
+  description: The people API used to access data about the people.
+  get:
+    displayName: List people
+    description: Use this method to list all the people.
+    is: [Paginated: {resourceType: Person}]
+  post:
+    displayName: Create a person
+    description: Use this method to add new person
+    body:
+      application/json:
+        type: Person
+  /{personId}:
+    type: [ErrorResponse: {statusCode: 404, example: "User not found"}]
+    displayName: A person
+    description: The endpoint to access information about the person
+    uriParameters:
+      personId:
+        type: integer
+        required: true
+        description: The ID of the person in the system. It is generated by the database numeric value for the person.
+        example: 1234
+    get:
+      displayName: Get a person
+      description: Returns a person
+      headers:
+        x-client-id:
+          example: 123456-acme.client.com
+          description: The application id used to make a request. It can be obtained in the developer console.
+          type: string
+          required: true
+      responses:
+        200:
+          body:
+            application/json:
+              type: Person
+    delete:
+      displayName: Remove a person
+      description: Removes the person from the datastore. This method do not returns any data in 200 response.
+      responses:
+        204:
+    put:
+      displayName: Update a person
+      description: Updates the person in the datastore.
+      body:
+        application/json:
+          type: Person
+      responses:
+        200:
+/products:
+  type: [ErrorResponse: {statusCode: 404, example: "Product not found"}]
+  displayName: Products
+  description: The API is to be used to access data about the products.
+  get:
+    displayName: List products
+    description: Returns a list of products.
+    is: [Paginated: {resourceType: Product}]
+  post:
+    displayName: Create product
+    description: Creates a product in the store. While creating a product the `id` and `etag` properties will be ignored.\nThe endpoint reject the request if exactly the same product is already defined in the datastore (all their properties equals). Newly created product is available for listing but it won't be available for ordering API until it's availability is not set.
+    body:
+      application/json:
+        type: Product
+    responses:
+      200:
+        body:
+          application/json:
+            type: Product
+      400:
+        description: The request has been rejected. Probably the product already exists in the datastore.
