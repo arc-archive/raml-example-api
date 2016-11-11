@@ -27,7 +27,7 @@ types:
       etag:
         type: string
         description: ETag of this response for caching purposes. __This property will be ignored when creating an object.__
-  Person:
+  AppPerson:
     displayName: A person resource
     description: |
       An object representing a person in the API. This object will be used in all methods returning a Person or list of persons.
@@ -35,12 +35,12 @@ types:
     properties:
       id:
         description: A unique identifier for a person. It is a 32 signs string containing alphanumeric characters.
-        pattern: [A-Za-Z0-9]
       name:
         required: true
         example: John Smith
         description: Person full name. The input will be rejected if this property is not set while creating new object.
         type: string
+        pattern: "[0-9a-zA-Z ]+"
       birthday:
         type: string
         description: The person's date of birth, represented as YYYY-MM-DD.
@@ -68,7 +68,7 @@ types:
     properties:
       id:
         description: Product id. It is a UUID of the database record. __This property will be ignored when creating an object.__
-        pattern: [A-Za-Z0-9]
+        pattern: "[0-9a-zA-Z]+"
       name:
         type: string
         description: Product name
@@ -233,7 +233,7 @@ securedBy: [oauth_2_0, oauth_1_0]
     description: Use this method to add new person
     body:
       application/json:
-        type: Person
+        type: AppPerson
   /{personId}:
     type: [ErrorResponse: {statusCode: 404, example: "User not found"}]
     displayName: A person
@@ -257,7 +257,7 @@ securedBy: [oauth_2_0, oauth_1_0]
         200:
           body:
             application/json:
-              type: Person
+              type: AppPerson
     delete:
       displayName: Remove a person
       description: Removes the person from the datastore. This method do not returns any data in 200 response.
@@ -268,7 +268,7 @@ securedBy: [oauth_2_0, oauth_1_0]
       description: Updates the person in the datastore.
       body:
         application/json:
-          type: Person
+          type: AppPerson
       responses:
         200:
 /products:
@@ -290,6 +290,23 @@ securedBy: [oauth_2_0, oauth_1_0]
         body:
           application/json:
             type: Product
+            examples:
+              Product:
+                id: d697f5cea85011e680f576304dec7eb7
+                name: Super product
+                quantity: 125
+                unit: ml
+                upc: "123456789101"
+                available: true
+                etag: "W/\"686897696a7c876b7e\""
+              OtherProduct:
+                id: 123e4567e89b12d3a456426655440000
+                name: Acme Product
+                quantity: 1
+                unit: kg
+                upc: "223456789101"
+                available: true
+                etag: "W/\"123456789\""
       400:
         description: The request has been rejected. Probably the product already exists in the datastore.
 /orgs:
@@ -306,6 +323,7 @@ securedBy: [oauth_2_0, oauth_1_0]
                   type: string
                   description: UUID generated ID
               example:
+                id: "12345"
                 onCall:
                   firstname: nico
                   lastname: ark
