@@ -301,6 +301,10 @@ securedBy: [oauth_2_0, oauth_1_0]
           body:
             application/json:
               type: Org # reference to global type definition
+              properties:
+                id:
+                  type: string
+                  description: UUID generated ID
               example:
                 onCall:
                   firstname: nico
