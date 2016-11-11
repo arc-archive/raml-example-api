@@ -342,3 +342,24 @@ securedBy: [oauth_2_0, oauth_1_0]
             body:
               application/json:
                 type: Manager[]
+/messages:
+  securedBy: [oauth_2_0]
+  post:
+    description: Post a new message
+    body:
+      application/json:
+        type: object
+        properties:
+          receiver:
+            type: string
+            description: receiver of the message
+            required: true
+          body:
+            type: string
+            description: A message body
+            required: true
+          important:
+            type: boolean
+            description: If true then the message will be marked as important
+            default: false
+            required: true
