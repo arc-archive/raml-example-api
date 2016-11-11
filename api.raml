@@ -326,6 +326,10 @@ securedBy: [oauth_2_0, oauth_1_0]
       body:
         application/json:
           type: Org
+          properties:
+            id:
+              type: string
+              description: UUID generated ID
       responses:
         200:
           body:
