@@ -17,6 +17,7 @@ baseUriParameters:
 
 traits:
   Paginated: !include traits/pagination.raml
+  Adminable: !include traits/adminable.raml
 
 uses:
   ExampleType: resourceTypes/example-types.raml
@@ -229,6 +230,7 @@ securedBy: [oauth_2_0, oauth_1_0]
   securedBy: oauth_2_0
   /{orgId}:
     get:
+      is:  [Adminable]
       responses:
         200:
           body:
@@ -257,6 +259,7 @@ securedBy: [oauth_2_0, oauth_1_0]
                       kind: admin
                   phone: "123-23"
     put:
+      is:  [Adminable]
       body:
         application/json:
           type: ExampleType.Org
@@ -270,6 +273,7 @@ securedBy: [oauth_2_0, oauth_1_0]
             application/json:
               type: ExampleType.Org
     /managers:
+      is:  [Adminable]
       get:
         responses:
           200:
@@ -279,6 +283,7 @@ securedBy: [oauth_2_0, oauth_1_0]
 /messages:
   securedBy: [oauth_2_0]
   post:
+    is:  [Adminable]
     description: Post a new message
     body:
       application/json:
