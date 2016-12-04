@@ -232,7 +232,6 @@ securedBy: [oauth_2_0, oauth_1_0]
     get:
       displayName: Get organization
       description: Returns an organization info.
-      is:  [Adminable]
       responses:
         200:
           body:
@@ -284,6 +283,7 @@ securedBy: [oauth_2_0, oauth_1_0]
   securedBy: [oauth_2_0]
   post:
     description: Post a new message
+    is:  [Adminable]
     body:
       application/json:
         type: object
