@@ -91,6 +91,7 @@ securitySchemes:
   pass_through: !include securitySchemes/passthrough.raml
   basic: !include securitySchemes/basic.raml
   digest: !include securitySchemes/digest.raml
+  x-custom: !include securitySchemes/x-custom.raml
 documentation:
   - title: Read this!
     content: |
@@ -113,7 +114,7 @@ documentation:
       Please, note the licensing information available in every ARC component.
       If you have any question email me: arc@mulesoft.com
       Or slack me (internally only): Pawel Psztyc (P3)
-securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest]
+securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom]
 /people:
   displayName: People
   description: The people API used to access data about the people.
