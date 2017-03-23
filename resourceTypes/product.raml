@@ -9,7 +9,7 @@ properties:
       Product id. It is a UUID of the database record.
       __This property will be ignored when creating an object.__
       It will be available when the product is stored in the datastore.
-    pattern: "[0-9a-zA-Z]+"
+    pattern: "[0-9a-zA-Z-]+"
   name:
     type: string
     description: Product name
@@ -42,3 +42,11 @@ properties:
       Product may be not available but the users still can order it with later delivery date.
     required: true
     example: true
+example:
+  id: we2322-4f4f4f-f4f4ff-f4f4ff4
+  name: Acme Product
+  quantity: 200
+  unit: ml
+  upc: "123456789101"
+  available: true
+  etag: "W\sd3deef3rgrgf4r"

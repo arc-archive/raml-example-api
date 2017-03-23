@@ -15,6 +15,11 @@ types:
       lastname: string
       title?: string
       kind: string # may be used to differenciate between classes that extend from `Person`
+    example:
+      firstname: Pawel
+      lastname: Psztyc
+      title: Mr.
+      kind: Manager
   Phone:
     type: string
     pattern: "^[0-9|-]+$" # defines pattern for the content of type `Phone`
@@ -23,9 +28,15 @@ types:
     properties:
       reports: Person[] # inherits all properties from type `Person`; array type where `[]` is a shortcut
       phone:  Phone
+      kind:
+        type: string
+        enum: [AcmeManager]
   Admin:
     type: Person # inherits all properties from type `Person`
     properties:
+      kind:
+        type: string
+        enum: [AcmeAdmin]
       clearanceLevel:
         enum: [ low, high ]
   AlertableAdmin:
