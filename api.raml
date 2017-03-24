@@ -42,6 +42,13 @@ types:
         description: The error message associated with the error.
         example: <<example>>
         required: true
+  Feature:
+    description: A feature to test enum values in the URI parameters.
+    type: string
+    enum:
+        - A
+        - B
+        - C
 resourceTypes:
   ErrorredResource:
     get:
@@ -115,6 +122,22 @@ documentation:
       If you have any question email me: arc@mulesoft.com
       Or slack me (internally only): Pawel Psztyc (P3)
 securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom]
+/test-parameters/{feature}:
+  uriParameters:
+    feature:
+      type: string
+      enum:
+        - A
+        - B
+        - C
+  get:
+    description: To test enum values in the URI parameters for inline type declaration.
+  /{typeFeature}:
+    uriParameters:
+      typeFeature:
+        type: Feature
+    get:
+      description: To test enum values in the URI parameters for global type declaration.
 /people:
   displayName: People
   description: The people API used to access data about the people.
