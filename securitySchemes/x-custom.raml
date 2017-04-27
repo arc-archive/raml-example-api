@@ -9,6 +9,16 @@ describedBy:
       description: |
         Used to send a custom token.
       type: string
+  queryParameters: 
+    debugToken: 
+      description: Select one of available values to run the request in the debug mode with selected level.
+      enum: [Info, Log, Warning, Error, Critical]
+      type: string
+      required: false
+    booleanToken:
+      description: Just to test boolean values.
+      type: boolean
+      default: true
   responses:
     401:
       description: |
