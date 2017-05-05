@@ -4,6 +4,7 @@ set -e # Exit with nonzero exit code if anything fails
 SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
+chmod 600 gh-travis_rsa
 eval `ssh-agent -s`
 ssh-add gh-travis_rsa
 
