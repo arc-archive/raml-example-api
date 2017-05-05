@@ -23,7 +23,7 @@ SHA=`git rev-parse --verify HEAD`
 git clone $REPO api
 
 # Build the console out of the latest API release.
-node ./build.js
+node ./build.js || exit 1
 
 # Now, the build is in ./build/ folder.
 # But we have to copy it to ./api/ folder after changing branch to gh-pages
