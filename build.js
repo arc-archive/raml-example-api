@@ -8,7 +8,7 @@ builder({
   src: 'https://github.com/mulesoft/api-console/archive/release/4.0.0.zip',
   dest: 'build',
   raml: 'api/api.raml',
-  jsCompilationLevel: 'SIMPLE',
+  // jsCompilationLevel: 'SIMPLE',
   useJson: true,
   verbose: true
 })
