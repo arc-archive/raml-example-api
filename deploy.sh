@@ -23,6 +23,7 @@ SHA=`git rev-parse --verify HEAD`
 git clone $REPO api
 
 # Build the console out of the latest API release.
+echo "Building the console"
 node ./build.js || exit 1
 
 # Now, the build is in ./build/ folder.
@@ -59,10 +60,10 @@ ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
 ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
 ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
 ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
-openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in ../deploy_key.enc -out ../deploy_key -d
-chmod 600 ../deploy_key
+openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in ../gh-travis_rsa.enc -out ../gh-travis_rsa -d
+chmod 600 ../gh-travis_rsa
 eval `ssh-agent -s`
-ssh-add deploy_key
+ssh-add gh-travis_rsa
 
 # Now that we're all set up, we can push.
 git push $SSH_REPO $TARGET_BRANCH
