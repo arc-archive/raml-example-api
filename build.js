@@ -5,8 +5,8 @@ const builder = require('api-console-builder');
 const fs = require('fs');
 
 builder({
-  dest: 'out',
-  raml: 'api.raml',
+  dest: 'build',
+  raml: 'api/api.raml',
   jsCompilationLevel: 'SIMPLE',
   useJson: true
 })

@@ -10,8 +10,7 @@ function doCompile {
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify
 if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
-    echo "Skipping deploy; just doing a build."
-    doCompile
+    echo "Skipping deploy."
     exit 0
 fi
 
@@ -20,25 +19,31 @@ REPO=`git config remote.origin.url`
 SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
 SHA=`git rev-parse --verify HEAD`
 
-# Clone the existing gh-pages for this repo into out/
-# Create a new empty branch if gh-pages doesn't exist yet (should only happen on first deply)
-git clone $REPO out
-cd out
+# first clone the repo and do the build. Build will be in ./build/
+git clone $REPO api
+
+# Build the console out of the latest API release.
+node ./build.js
+
+# Now, the build is in ./build/ folder.
+# But we have to copy it to ./api/ folder after changing branch to gh-pages
+
+cd api
 git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
 cd ..
 
 # Clean out existing contents
-rm -rf out/**/* || exit 0
+rm -rf api/**/* || exit 0
 
-# Run our compile script
-doCompile
+# Copy the new console
+cp -a build/. api/
 
 # Now let's go have some fun with the cloned repo
-cd out
+cd api
 git config user.name "Travis CI"
 git config user.email "$COMMIT_AUTHOR_EMAIL"
 
-# If there are no changes to the compiled out (e.g. this is a README update) then just bail.
+# If there are no changes to the compiled api (e.g. this is a README update) then just bail.
 if git diff --quiet; then
     echo "No changes to the output on this push; exiting."
     exit 0
