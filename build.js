@@ -9,7 +9,8 @@ builder({
   dest: 'build',
   raml: 'api/api.raml',
   jsCompilationLevel: 'SIMPLE',
-  useJson: true
+  useJson: true,
+  verbose: true
 })
 .then(() => {
   console.log('Build complete');

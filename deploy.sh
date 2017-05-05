@@ -23,12 +23,12 @@ SHA=`git rev-parse --verify HEAD`
 git clone $REPO api
 
 # Build the console out of the latest API release.
-echo "Building the console"
+echo "Building the console..."
 node ./build.js || exit 1
 
 # Now, the build is in ./build/ folder.
 # But we have to copy it to ./api/ folder after changing branch to gh-pages
-
+echo "Updating gh-pages branch..."
 cd api
 git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
 cd ..
@@ -50,6 +50,7 @@ if git diff --quiet; then
     exit 0
 fi
 
+echo "Deploying..."
 # Commit the "changes", i.e. the new version.
 # The delta will show diffs between new and old versions.
 git add -A .
