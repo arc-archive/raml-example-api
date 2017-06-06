@@ -283,13 +283,13 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
                 onCall:
                   firstname: nico
                   lastname: ark
-                  kind: admin
+                  kind: AcmeAdmin
                   clearanceLevel: low
                   phone: "12321"
                 Head:
                   firstname: nico
                   lastname: ark
-                  kind: manager
+                  kind: AcmeManager
                   reports:
                     -
                       firstname: nico
@@ -319,7 +319,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
 /messages:
   securedBy: [oauth_2_0]
   post:
-    description: Post a new message
+    description: Create a new message
     is:  [Adminable]
     body:
       application/json:
@@ -338,3 +338,34 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
             description: If true then the message will be marked as important
             default: false
             required: true
+  get:
+    description: |
+      List user messages. It returns an array of messages for last of 7 days if
+      `since` property is not set.
+      You can use `since` and `until` query parameters to control messages time
+      span.
+    queryParameters:
+      until:
+        type: date-only
+        description: Date right limit of the messages query.
+        example: 2017-05-12
+      since:
+        type: date-only
+        description: Date left limit of the messages query.
+        example: 2017-05-10
+    responses:
+      200:
+        body:
+          application/json:
+            type: array
+            items: !include resourceTypes/message-type.raml
+            example: !include examples/messages-example.json
+  /bulk:
+    post:
+      description: Bulk create messages.
+      is:  [Adminable]
+      body:
+        application/json:
+          type: array
+          items: !include resourceTypes/message-sent-type.raml
+          example: !include examples/messages-sent-example.json
