@@ -22,6 +22,16 @@ traits:
 uses:
   ExampleType: resourceTypes/example-types.raml
 
+annotationTypes:
+  deprecated: nil
+  clearanceLevel:
+    properties:
+      level:
+        enum: [ low, medium, high ]
+        required: true
+      signature:
+        pattern: "\\d{3}-\\w{12}"
+        required: true
 types:
   Image: !include resourceTypes/image.raml
   Resource: !include resourceTypes/resource.raml
@@ -124,6 +134,7 @@ documentation:
       Or slack me (internally only): Pawel Psztyc (P3)
 securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other]
 /test-parameters/{feature}:
+  (deprecated):
   uriParameters:
     feature:
       type: string
@@ -132,6 +143,9 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
         - B
         - C
   get:
+    (clearanceLevel):
+      level: high
+      signature: 230-ghtwvfrs1itr
     description: To test enum values in the URI parameters for inline type declaration.
     queryParameters:
       testRepeatable:
@@ -149,6 +163,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
         items: date-only
         required: false
   /{typeFeature}:
+    (deprecated):
     uriParameters:
       typeFeature:
         type: Feature
