@@ -133,6 +133,21 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
         - C
   get:
     description: To test enum values in the URI parameters for inline type declaration.
+    queryParameters:
+      testRepeatable:
+        required: true
+        type: string[]
+        example: [value1, value2]
+      numericRepeatable:
+        required: true
+        type: integer[]
+        examples:
+          Some-test-example: [123, 456]
+          Other-example: [1011, 1213]
+      notRequiredRepeatable:
+        type: array
+        items: date-only
+        required: false
   /{typeFeature}:
     uriParameters:
       typeFeature:
