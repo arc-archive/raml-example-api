@@ -23,7 +23,8 @@ uses:
   ExampleType: resourceTypes/example-types.raml
 
 annotationTypes:
-  deprecated: nil
+  annotationTest: nil
+  deprecated: string
   clearanceLevel:
     properties:
       level:
@@ -134,7 +135,7 @@ documentation:
       Or slack me (internally only): Pawel Psztyc (P3)
 securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other]
 /test-parameters/{feature}:
-  (deprecated):
+  (deprecated): This endpoint is deprecated and will be removed.
   uriParameters:
     feature:
       type: string
@@ -149,6 +150,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
     description: To test enum values in the URI parameters for inline type declaration.
     queryParameters:
       testRepeatable:
+        (deprecated): Test parameter will be removed in next version of the API.
         required: true
         type: string[]
         example: [value1, value2]
@@ -159,13 +161,16 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
           Some-test-example: [123, 456]
           Other-example: [1011, 1213]
       notRequiredRepeatable:
+        (annotationTest):
         type: array
         items: date-only
         required: false
   /{typeFeature}:
-    (deprecated):
+    (annotationTest):
+    (deprecated): This endpoint will be removed in future release of the API.
     uriParameters:
       typeFeature:
+        (annotationTest):
         type: Feature
     get:
       description: To test enum values in the URI parameters for global type declaration.
@@ -176,15 +181,30 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
     displayName: List people
     description: Use this method to list all the people.
     is: [Paginated: {resourceType: AppPerson}]
+    headers:
+      x-people-op-id:
+        (annotationTest):
+        type: string
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        description: People ops ID. It is UUID v4 string
+        example: 9719fa6f-c666-48e0-a191-290890760b30
   post:
     displayName: Create a person
     description: Use this method to add new person
     body:
       application/json:
+        (deprecated): This response type is deprecated and soon will be replaced.
         type: AppPerson
       application/xml:
         type: !include schemas/person.xsd
         example: !include examples/person.xml
+    headers:
+      x-people-op-id:
+        (annotationTest):
+        type: string
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        description: People ops ID. It is UUID v4 string
+        example: 9719fa6f-c666-48e0-a191-290890760b30
   /{personId}:
     type: [ResourceNotFound]
     displayName: A person
@@ -200,10 +220,17 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
       description: Returns a person
       headers:
         x-client-id:
+          (deprecated): This will be replaced
           example: 123456-acme.client.com
           description: The application id used to make a request. It can be obtained in the developer console.
           type: string
           required: true
+        x-people-op-id:
+          (annotationTest):
+          type: string
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: People ops ID. It is UUID v4 string
+          example: 9719fa6f-c666-48e0-a191-290890760b30
       responses:
         200:
           body:
@@ -217,6 +244,13 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
       description: Removes the person from the datastore. This method do not returns any data in 200 response.
       responses:
         204:
+      headers:
+        x-people-op-id:
+          (annotationTest):
+          type: string
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: People ops ID. It is UUID v4 string
+          example: 9719fa6f-c666-48e0-a191-290890760b30
     put:
       displayName: Update a person
       description: Updates the person in the datastore.
@@ -228,6 +262,13 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
           example: !include examples/person.xml
       responses:
         200:
+      headers: 
+        x-people-op-id:
+          (annotationTest):
+          type: string
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: People ops ID. It is UUID v4 string
+          example: 9719fa6f-c666-48e0-a191-290890760b30
 /products:
   displayName: Products
   description: The API is to be used to access data about the products.
@@ -251,6 +292,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
       200:
         body:
           application/json:
+            (annotationTest):
             type: Product
             examples:
               Product:
@@ -376,6 +418,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
       span.
     queryParameters:
       until:
+        (annotationTest):
         type: date-only
         description: Date right limit of the messages query.
         example: 2017-05-12
@@ -396,6 +439,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
       is:  [Adminable]
       body:
         application/json:
+          (annotationTest):
           type: array
           items: !include resourceTypes/message-sent-type.raml
           example: !include examples/messages-sent-example.json
