@@ -144,6 +144,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
         - B
         - C
   get:
+    (deprecated): This method is deprecated and will be removed.
     (clearanceLevel):
       level: high
       signature: 230-ghtwvfrs1itr
@@ -167,17 +168,20 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
         required: false
   /{typeFeature}:
     (annotationTest):
-    (deprecated): This endpoint will be removed in future release of the API.
+    (deprecated): This method will be removed in future release of the API.
     uriParameters:
       typeFeature:
         (annotationTest):
         type: Feature
     get:
+      (deprecated): This endpoint is deprecated and will be removed.
       description: To test enum values in the URI parameters for global type declaration.
 /people:
+  (annotationTest):
   displayName: People
   description: The people API used to access data about the people.
   get:
+    (annotationTest):
     displayName: List people
     description: Use this method to list all the people.
     is: [Paginated: {resourceType: AppPerson}]
@@ -262,7 +266,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
           example: !include examples/person.xml
       responses:
         200:
-      headers: 
+      headers:
         x-people-op-id:
           (annotationTest):
           type: string
