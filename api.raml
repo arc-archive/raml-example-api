@@ -210,7 +210,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
         description: People ops ID. It is UUID v4 string
         example: 9719fa6f-c666-48e0-a191-290890760b30
   /{personId}:
-    type: [ResourceNotFound]
+    type: ResourceNotFound
     displayName: A person
     description: The endpoint to access information about the person
     uriParameters:
@@ -321,7 +321,7 @@ securedBy: [oauth_2_0, oauth_1_0, pass_through, basic, digest, x-custom, x-other
       400:
         description: The request has been rejected. Probably the product already exists in the datastore.
   /{productId}:
-    type: [ResourceNotFound]
+    type: ResourceNotFound
     get:
       responses:
         200:
